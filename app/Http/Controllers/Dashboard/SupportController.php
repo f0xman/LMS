@@ -20,7 +20,6 @@ class SupportController extends Controller
     public function __construct(Support $support)
     {
         parent::__construct();
-        //$this->middleware('auth');
         $this->support = $support;
     }
 
@@ -69,17 +68,11 @@ class SupportController extends Controller
      /**
      * Store a new support request.
      *
-     * @param  Request  $request
+     * @param  StorePostSupport  $request
      * @return Response
      */
-     public function postSupport(Request $request)
+     public function postSupport(StorePostSupport $request)
     {
-        $validatedData = $request->validate([
-            'title' => 'required',
-            'message' => 'required',
-        ]);
-
-        //// VALIDATION passed
         $support = new Support([
             'title' => $request->get('title'),
             'user_id' => Auth::id()
@@ -125,7 +118,6 @@ class SupportController extends Controller
             'message' => 'required',
         ]);
 
-        //// VALIDATION passed
         $support_message = new SupportMessage([
             'support_id' => $request->get('support_id'),
             'message' => $request->get('message'),
