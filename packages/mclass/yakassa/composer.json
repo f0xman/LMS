@@ -1,0 +1,17 @@
+{
+    "name": "mclass/yakassa",
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Mclass\\Yakassa\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Mclass\\Yakassa\\YakassaServiceProvider"
+            ]
+        }
+    }
+}
