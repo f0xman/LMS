@@ -128,4 +128,5 @@ class SupportController extends Controller
 
         return redirect()->route('postQuestion', ['id' => $request->get('support_id')])->with('success', 'Сообщение отправлено!');
     }
+    
 }

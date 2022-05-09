@@ -16,8 +16,8 @@ class QuizController extends Controller
     public function quiz($id, Order $order) {
 
         $quiz = Quiz::where('id', $id)
-        ->with('video', 'questions')
-        ->first();
+                        ->with('video', 'questions')
+                        ->first();
 
         $_order = $order->isSeminarAvailable($quiz->video->seminar_id, Auth::id());
 

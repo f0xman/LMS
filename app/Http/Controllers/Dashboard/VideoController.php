@@ -42,4 +42,29 @@ class VideoController extends Controller
 
         return view('dashboard.video', ['video' => $video, 'quizzes' => $quizzes, 'seminar' => $seminar]);
     }
+
+     /**
+     * Store a new video comment.
+     *
+     * @param  Request  $request
+     * @return Response
+     */
+    public function postComment(Request $request)
+    {
+        $validatedData = $request->validate([
+            'comment' => 'required',
+        ]);
+
+        // The comment is valid...
+        $comment = new Comment([
+            'video_id' => $request->get('video_id'),
+            'parent_id' => 0,
+            'user_id' => Auth::id(),
+            'comment' => $request->get('comment'),
+        ]);
+
+        $comment->save();
+        return redirect()->route('showVideo', ['id' => $request->get('video_id')])->with('success', 'Комментарий добавлен!');
+    }
+
 }
