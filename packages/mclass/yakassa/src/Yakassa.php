@@ -71,7 +71,6 @@ class Yakassa
         $response = json_decode($response, true);
 
         return (isset($response['confirmation']['confirmation_url'])) ?
-                //$response['confirmation']['confirmation_url'] :
                 $response :
                 $this->processError($response, $order) ;
     }

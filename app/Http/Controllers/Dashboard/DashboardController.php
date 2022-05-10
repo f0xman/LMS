@@ -56,13 +56,13 @@ class DashboardController extends Controller
     /**
      * Success page after ordering.
      *
-     * @param  string $order_id, Yakassa $kassa
+     * @param  string $order_id, OrderHandler $order
      * @return view result
      */
-    public function success(string $order_id, YakassaHandler $kassa)
+    public function success(string $order_id, OrderHandler $order)
     {
         
-        $yookassaResponseStatus = $kassa->updateOrderStatus($order_id);
+        $yookassaResponseStatus = $order->updateOrderStatus($order_id);
 
         if ($yookassaResponseStatus == 'succeeded') {
             

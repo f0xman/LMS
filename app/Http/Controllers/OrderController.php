@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Log;
 use App\Models\Order;
 use App\Models\Seminar;
+use App\Services\OrderHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
@@ -17,9 +18,11 @@ class OrderController extends Controller
      *  АВТОРИЗОВАННЫЙ посетитель нажавший "купить курс""
      *
      * @param  Request  $request
+     * @param  Order  $order
+     * @param  OrderHandler  $handler
      * @return Response
      */
-    public function index(Request $request, Yakassa $kassa, Order $order)
+    public function index(Request $request, Order $order, OrderHandler $handler)
     {
 
         $seminar_id = Session::get('seminar_id');
@@ -29,72 +32,18 @@ class OrderController extends Controller
         //// Защита от повторной покупки для кликнувшего купить "НЕавторизованного"
         if ($order->isSeminarAvailable($seminar_id, $user_id)) {
             Session::flush();
-            return redirect()->route('showCourse', ['id' => $seminar_id])->with('success', 'Этот семинар уже доступен для вас');
+            return redirect()->route('showSeminar', ['id' => $seminar_id])->with('success', 'Этот семинар уже доступен для вас');
         }
 
-        $seminar = Seminar::select('price', 'title', 'date')->where('id', $seminar_id)->first();
+        $url = $handler->getYakassaURI($seminar_id, $user_id, $request->get('order_id'));
 
-        $time = strtotime($seminar->date);
-        $open_to = date("Y-m-d", strtotime("+1 month", $time)); /// Дата, до которой будет доступен семинар в ЛК
-
-        $order_data = array('seminar_id' => $seminar_id,
-            'user_id' => $user_id,
-            'price' => $seminar->price,
-            'open_to' => $open_to,
-        );
-
-        $order_id = $this->isOrderIdExist($request->get('order_id'), $order_data);
-
-        ///// Данные для отправки на yookassa
-        $yookassa_data = array('order_id' => $order_id,
-            'amount' => $seminar->price,
-            'description' => 'Заказ № ' . $order_id . '. ' . $seminar->title,
-        );
-
-        $order_data = array_merge($order_data, $yookassa_data);
-
-        $url = $this->getYakassaURI($order_id, $order_data, $kassa);
-
-        return ($url) ? redirect($url) : abort(500);
-    }
-
-    /**
-     *  Проверка id заказа (ранее не оплаченный)
-     *  Если нет, заводим новый заказ и возвращаем его id
-     *
-     * @param int $id
-     * @param array $data
-     * @return int $id
-     */
-    private function isOrderIdExist($id, $data)
-    {
-        if ($id == null) {
-            $new_order = new Order($data);
-            $new_order->save();
-            return $new_order->id;
+        if ($url) {
+            Session::flush();
+            return redirect($url);
+        } else {
+            return abort(500); //// Это временно, тут надо обработчик ошибок ЯК
         }
-        return $id;
-    }
 
-    /**
-     *  Отправка данных на Yakassa
-     *  Обновление yookassa_id для заказа
-     *  Получение платежного урл для перехода на юкассу
-     *
-     * @param  array  $data
-     * @return string $url
-     */
-    private function getYakassaURI($order_id, $data, $kassa)
-    {
-
-        $yookassaResponse = $kassa->getYakassaConfirmationUrl($data);
-
-        Order::where('id', $order_id)
-            ->update(['yookassa_id' => $yookassaResponse['id']]);
-
-        Session::flush();
-
-        return $yookassaResponse['confirmation']['confirmation_url'];
     }
 
     /**
