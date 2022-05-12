@@ -20,6 +20,20 @@ class Order extends Model
         return $this->belongsTo(User::class, 'user_id')->withDefault();
     }
 
+    //// Куплен ли уже семинар или неоплачен
+    public function isAlreadyPurchased($seminarId, $userId)
+    {
+        $result = self::select('id', 'status')
+            ->where('removed', 0)
+            ->where('user_id', $userId)
+            ->where('seminar_id', $seminarId)
+            ->first();
+        if ($result) { 
+            return ( $result->status == 'succeeded' ) ? true : $result->id;
+        }
+        return null;
+    }
+
     //// Доступен ли семинар ученику
     public function isSeminarAvailable($seminarId, $userId)
     {

@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Session;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -19,12 +19,11 @@ class IsUserAuth
      */
     public function handle(Request $request, Closure $next)
     {             
-        if (!Session::get('seminar_id')) {
-            Session::put(['seminar_id' => $request->get('seminar_id'), 'toPaymentGate' => 'true']);
+        if ($request->session()->missing('seminar_id')) {
+            session(['seminar_id' => $request->get('seminar_id'), 'toPaymentGate' => 'true']);
         }
 
         if(!Auth::user()) {
-            //return Session::all();
             return redirect()->route('register');
         }
 

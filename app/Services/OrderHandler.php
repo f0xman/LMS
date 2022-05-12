@@ -3,9 +3,10 @@
 namespace App\Services;
 
 use App\Models\Order;
+use App\Models\Log;
 use App\Models\Seminar;
-use Illuminate\Support\Facades\Auth;
 use Mclass\Yakassa\Yakassa;
+use Illuminate\Support\Arr;
 
 final class OrderHandler
 {
@@ -15,8 +16,7 @@ final class OrderHandler
     public function __construct(Yakassa $kassa)
     {
         $this->kassa = $kassa;
-    }
-    
+    }    
 
     /**
      * Формируем урл для отправки данных на Yookassa API
@@ -102,7 +102,7 @@ final class OrderHandler
      */
     private function getOrCreateOrderId(Int $orderId, Array $seminarData)
     {
-        if ($orderId == null) {
+        if ($orderId == 0) {
             $new_order = new Order($seminarData);
             $new_order->save();
             return $new_order->id;
@@ -134,6 +134,53 @@ final class OrderHandler
         }
 
         return "succeeded";
+    }
+
+    /**
+     *  Получение и обоаботка результата оплаты с Yakassa
+     *  Изменение статуса платежа
+     *
+     * @param  Request $request
+     * @return response
+     */
+    public function handleYakassaResponce(Request $request) {
+
+        if ($request->input('object.id') != '') {
+
+            $status = $request->input('object.status');
+            $yookassa_id = $request->input('object.id');
+            $order_id = $request->input('object.metadata.order_id');
+            $seminar_id = $request->input('object.metadata.seminar_id');
+            $user_id = $request->input('object.metadata.user_id');
+
+            $order = Order::select('status')
+                ->where('yookassa_id', $yookassa_id)
+                ->where('id', $order_id)
+                ->first();
+
+            if ($status == 'succeeded' && $order->status == null) {
+
+                $logData = $yookassa_id . '-' . $status . '-' . $seminar_id . '-' . $order_id;
+
+                Log::create(['body' => $logData, 'ip' => $request->ip()]);
+
+                Order::where('id', $order_id)
+                    ->where('yookassa_id', $yookassa_id)
+                    ->update(['status' => $status, 'level' => 2]);
+
+                try {
+                    $this->finalizeOrder($order_id);
+                } catch (\Exception$e) {
+                    Log::create(['body' => $e]);
+                    $this->sendErrorMail($e, 'notifier');
+                    return response('', 200);
+                }
+            }
+
+        }
+
+        return response('', 200);
+
     }
 
 }

@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Session;
+
 use Illuminate\Http\Request;
 
 class ToPaymentGate
@@ -17,9 +17,9 @@ class ToPaymentGate
      */
     public function handle(Request $request, Closure $next)
     {
-        if(Session::get('toPaymentGate')) {
+        if ($request->session()->has('toPaymentGate')) {
             return redirect()->route('order');
-        }   
+        }
         return $next($request);
     }
 }

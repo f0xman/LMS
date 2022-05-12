@@ -10,7 +10,7 @@ use App\Models\Error;
 class Yakassa
 {
 
-    private const PAYMENT_URL = 'https://payment.yandex.net/api/v3/payments';
+    private const PAYMENT_URL = 'https://api.yookassa.ru/v3/payments';
     private const RETURN_URL = 'https://mclass.pro/dashboard/success';
     private const API_URL = 'https://api.yookassa.ru/v3/payments';
 

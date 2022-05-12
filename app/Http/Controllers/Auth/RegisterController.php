@@ -59,17 +59,17 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8'],
-            'phone' => ['required', 'string'],
-
+            'phone' => ['required', 'string']
+            
             // jur fields
-            'jaddress' => ['required', 'string'],
-            'inn' => ['required', 'numeric', 'max:12'],
-            'kpp' => ['required', 'numeric', 'max:9'],
-            'rs' => ['required', 'numeric', 'max:20'],
-            'bank' => ['required', 'string'],
-            'bic' => ['required', 'numeric', 'max:9'],
-            'ks' => ['required', 'numeric', 'max:20'],
-            'dn' => ['required', 'string']
+            // 'jaddress' => ['required', 'string'],
+            // 'inn' => ['required', 'numeric', 'max:12'],
+            // 'kpp' => ['required', 'numeric', 'max:9'],
+            // 'rs' => ['required', 'numeric', 'max:20'],
+            // 'bank' => ['required', 'string'],
+            // 'bic' => ['required', 'numeric', 'max:9'],
+            // 'ks' => ['required', 'numeric', 'max:20'],
+            // 'dn' => ['required', 'string']
         ]);
     }
 

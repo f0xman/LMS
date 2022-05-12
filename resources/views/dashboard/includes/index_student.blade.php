@@ -12,17 +12,15 @@
 					    <div class="box_grid wow">
 						    <figure class="block-reveal">
 							    <div class="block-horizzontal"></div>
-							    <a href="{{ route('courseShow', ['slug'=>$order->seminar->slug]) }}" target="_blank"><img src="{{ asset('uploads/'.$order->seminar->image) }}" class="img-fluid" alt="{{ $order->seminar->title }}"></a>	
-
-                                    <div class="price">{{ $order->seminar->price }}  рублей</div>                     
-
+							    <img src="{{ asset('uploads/'.$order->seminar->image) }}" class="img-fluid" alt="{{ $order->seminar->title }}">
+                                    <div class="price">{{ $order->seminar->price }}  рублей</div>
 						    </figure>
 						    <div class="wrapper">
-							    <a href="{{ route('courseShow', ['slug'=>$order->seminar->slug]) }}" target="_blank"><h3>{{ $order->seminar->title }}</h3></a>
+							    <h3>{{ $order->seminar->title }}</h3>
 						    </div>
 						    <ul>
 							    <li>
-                                <form method="POST" action="{{ route('delete') }}" id="delete">
+                                <form method="POST" action="{{ route('deleteSeminar') }}" id="delete">
                                     @csrf
                                     <a href="#nogo" onclick="if(confirm('Удалить?')) document.getElementById('delete').submit()"><i class="fa fa-trash-o"></i> удалить</a>
                                     <input type="hidden" name="order_id" value="{{ $order->id }}">

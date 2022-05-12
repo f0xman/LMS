@@ -7,14 +7,12 @@ use App\Models\Order;
 use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Mclass\Yakassa\Yakassa;
 
 class DashboardController extends Controller
 {
 
     public function index()
     {
-
         $seminarsNotAvailable = Order::where('user_id', Auth::id())
             ->where('removed', '0')
             ->where(function ($query) {
@@ -42,7 +40,7 @@ class DashboardController extends Controller
      * @param  Request  $request
      * @return Response
      */
-    public function delete(Request $request)
+    public function deleteSeminar(Request $request)
     {
         $res = Order::where('id', $request->get('order_id'))
                     ->where('user_id', Auth::id())
