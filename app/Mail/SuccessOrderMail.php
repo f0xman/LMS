@@ -30,7 +30,7 @@ class SuccessOrderMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('🙌 Успешная покупка курса на '.config('app.name'))
+        return $this->subject('🙌 Успешная покупка семинара на '.config('app.name'))
                     ->markdown('emails.success_order')
                     ->with(['data' => $this->data]);
     }

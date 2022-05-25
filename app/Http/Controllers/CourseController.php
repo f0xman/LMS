@@ -71,8 +71,7 @@ class CourseController extends Controller
         if(Auth::user()) {
             $purchasedCoursesIds = Order::select('seminar_id')
                                         ->where('user_id', Auth::id())
-                                        ->where('removed', 0)
-                                        //->where('status', 'succeeded')      
+                                        ->where('removed', 0)   
                                         ->pluck('seminar_id')
                                         ->toArray();
         }

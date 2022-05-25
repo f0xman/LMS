@@ -2,42 +2,48 @@
 
 @section('content')
 
-@include('frontend.includes.sub_tiny')
+<div class="container">
+{{ Breadcrumbs::render('teachers') }}
+</div>
 
 
-		<div class="container margin_60_35">
-			<div class="row">
+		<!-- teachers-section 
+			================================================== -->
+			<section class="teachers-section">
+			<div class="container">
+				<div class="teachers-box">
+					<div class="row">
 
-            @foreach ($teachers as $teacher)
+					@foreach ($teachers as $teacher)
 
-            	<div class="col-xl-4 col-lg-6 col-md-6">
-					<div class="box_grid wow">
-						<figure class="block-reveal">
-							<div class="block-horizzontal"></div>
-							<a href="{{ route('teacherShow', ['id'=>$teacher->id]) }}"><img src="{{ asset('uploads/'.$teacher->image) }}" class="img-fluid" alt=""></a>
-                            <div class="preview"><span>Профайл преподавателя</span></div>
-                        </figure>
-						<div class="wrapper">
-							<a href="{{ route('teacherShow', ['id'=>$teacher->id]) }}"><h3>{{ $teacher->name }}</h3></a>
-							<p>{{ $teacher->description }}</p>
-							
-						</div>
-						<ul>
-							<li></li>
-							<li><a href="{{ route('courseTeacher', ['id'=>$teacher->id]) }}">Все курсы </a></li> 
-						</ul>
+					<div class="col-lg-3 col-md-6">
+							<div class="teacher-post">
+								<a href="{{ route('teacherShow', ['id'=>$teacher->id]) }}">
+									<img src="{{ asset('uploads/'.$teacher->image) }}" alt="{{ $teacher->name }}">
+									<div class="hover-post">
+										<h2>{{ $teacher->name }}</h2>
+										<span>{{ $teacher->description }}</span>
+									</div>
+								</a>
+							</div>	
 					</div>
-				</div>
-				<!-- /box_grid -->
 
-            @endforeach
 
+					<!-- /box_grid -->
+
+					@endforeach		
+
+					{{ $teachers->links() }}
+					
+					</div>
+				</div>	
 			</div>
-			<!-- /row -->
+			
+		</section>
+		<!-- End teachers section -->
 
-			{{ $teachers->links() }}
-		</div>
-		<!-- /container -->
+
+		
 
 
 @endsection

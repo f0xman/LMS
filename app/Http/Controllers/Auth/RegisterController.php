@@ -97,7 +97,6 @@ class RegisterController extends Controller
             'phone' => $data['phone'],
             'password' => Hash::make($data['password']),
             'ip' =>  request()->ip(), 
-
             'jaddress' => $data['jaddress'],
             'inn' => $data['inn'],
             'kpp' => $data['kpp'],

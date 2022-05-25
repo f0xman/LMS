@@ -21,7 +21,7 @@ class QuizHandler
      * @param  Int  $order_id
      * @return Array
      */
-    public function checkAnswers(array $request): array
+    public function checkAnswers(array $request): Array
     {
         $quizId = $request['quiz_id'];
         $orderId = $request['order_id'];
@@ -52,7 +52,7 @@ class QuizHandler
      * @param  Int  $quiz_id
      * @return Array
      */
-    private function composeRightAnswers($quiz_id): array
+    private function composeRightAnswers($quiz_id): Array
     {
         return Question::where('quiz_id', $quiz_id)->pluck('v1')->toArray();
     }
@@ -104,7 +104,7 @@ class QuizHandler
      * @param  Int  $quiz_id
      * @return Void
      */
-    private function updateQuiz($quiz_id)
+    private function updateQuiz(Int $quiz_id): Void
     {
         QuizPassed::firstOrCreate([
             'quiz_id' => $quiz_id,
@@ -118,7 +118,7 @@ class QuizHandler
      * @param  Int  $order_id
      * @return Void
      */
-    private function updateLevel($order_id)
+    private function updateLevel(Int $order_id): Void
     {
         Order::where('id', $order_id)
             ->where('user_id', Auth::id())
@@ -131,7 +131,7 @@ class QuizHandler
      * @param  Iterator  $videos
      * @return Array
      */
-    private function composeQuizzesIds(Iterable $videos): array
+    private function composeQuizzesIds(Iterable $videos): Array
     {
         $quizzesIds = array();
 

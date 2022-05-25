@@ -6,7 +6,7 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
 	<div class="container">
 
-		<a class="navbar-brand" href="index.html">
+		<a class="navbar-brand" href="/">
 			<img src="/assets/images/logo.svg" alt="">
 		</a>
 
@@ -17,7 +17,7 @@
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav mr-auto">
 
-				<li class="drop-link"><a class="active" href="/">Главная</a></li>
+				<!--  <li class="drop-link"><a class="active" href="/">Главная</a></li> -->
 				<li><a href="/courses/">Курсы</a></li>
 				<li><a href="/teachers/">Преподаватели</a></li>
 				<li><a href="/about/">О нас</a></li>

@@ -40,25 +40,15 @@ class Seminar extends Model
         return $filters->apply($builder);
     }
 
-    
-    // public function setImagesAttribute($images)
-    // {
-    //     if (is_array($images)) {
-    //     $this->attributes['images'] = json_encode($images);
-    //     }
-    // }
-
-
-    // public function getImagesAttribute($images)
-    // {
-    //     return json_decode($images, true);
-    // }
-
-    public static function isTeacherCourse($courseId, $teacherId)
+    public function isTeacherCourse($courseId, $teacherId)
     {
-        return static::where('teacher_id', $teacherId)
+        return $this->where('teacher_id', $teacherId)
                     ->where('id', $courseId)
                     ->exists();
     }
+
+    public function getSeminarsByIds(Array $ids) {
+        return self::whereIn('id', $ids)->get();
+    } 
 
 }

@@ -248,6 +248,4 @@
     <script src="{{ asset('assets/js/jquery.mask.js') }}"></script>
 @endpush
 
-<!-- https://igorescobar.github.io/jQuery-Mask-Plugin/docs.html -->
-
 @endsection

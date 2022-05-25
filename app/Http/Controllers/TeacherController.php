@@ -12,18 +12,12 @@ class TeacherController extends Controller
 
     public function index()
     {
-        $teachers = Teacher::orderBy('id', 'desc')
-                            ->paginate(12);
-
-
-        return view('frontend.teachers', ['teachers' => $teachers]);
+        return view('frontend.teachers', ['teachers' => Teacher::orderBy('id', 'desc')->paginate(12)]);
     }
 
     public function show($id)
     {
-        $teacher = Teacher::where('id', $id)
-                            ->with(['courses'])
-                            ->firstOrFail();
+        $teacher = Teacher::where('id', $id)->firstOrFail();
 
         SEOTools::setTitle(' преподаватель '.$teacher->name);
         SEOTools::setDescription($teacher->description);

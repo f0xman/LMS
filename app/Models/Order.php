@@ -15,7 +15,7 @@ class Order extends Model
         return $this->belongsTo(Seminar::class)->withDefault();
     }
 
-    public function users()
+    public function user()
     {
         return $this->belongsTo(User::class, 'user_id')->withDefault();
     }
@@ -50,5 +50,31 @@ class Order extends Model
     {
         return $date->format('Y-m-d H:i:s');
     }
+
+    public function getUserOrderIds(Int $userId): Array {
+        return self::where('user_id', $userId)
+                ->where('status', 'succeeded')
+                ->pluck('seminar_id')->toArray();
+    } 
+
+    public function getNotAvailableSeminars(Int $userId) {
+        return self::where('user_id', $userId)
+                        ->where('removed', '0')
+                        ->where(function ($query) {
+                            $query->where('status', '!=', 'succeeded')
+                                ->orWhere('status', null);
+                        })
+                        ->orderBy('id', 'Desc')
+                        ->with(['seminar'])
+                        ->get();
+    } 
+
+    public function getAvailableSeminars(Int $userId) {
+        return self::where('user_id', $userId)
+                        ->where('status', 'succeeded')
+                        ->orderBy('id', 'Desc')
+                        ->with(['seminar'])
+                        ->get();
+    } 
 
 }

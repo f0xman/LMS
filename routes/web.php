@@ -24,7 +24,7 @@ Route::get('/courses/archived', [App\Http\Controllers\CourseController::class, '
 Route::get('/teachers', [App\Http\Controllers\TeacherController::class, 'index'])->name('teachers');
 Route::get('/teacher/{id}', [App\Http\Controllers\TeacherController::class, 'show'])->name('teacherShow');
 
-Route::any('/order', [App\Http\Controllers\OrderController::class, 'index'])->name('order')->middleware(IsUserAuth::class);
+Route::any('/order', [App\Http\Controllers\OrderController::class, 'create'])->name('order')->middleware(IsUserAuth::class);
 Route::any('/order/notifier', [App\Http\Controllers\OrderController::class, 'notifier'])->name('notifier');
 
 Route::get('/about', function () {

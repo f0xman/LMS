@@ -13,4 +13,12 @@ class Course extends Model
     {
         return $this->hasMany(Seminar::class, 'course_id');
     }
+
+    public function getTopCourses() {
+        return self::where('active', '1')
+                    //->where('top', '1')
+                    ->where('end', '>', date('Y-m-d'))
+                    ->with(['seminars'])
+                    ->get();
+    }
 }

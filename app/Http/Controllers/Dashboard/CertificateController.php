@@ -10,20 +10,15 @@ use App\Models\Order;
 use App\Models\Course;
 use App\Models\Seminar;
 use App\Services\CertificateHandler;
-use Imagick;
+
 
 class CertificateController extends Controller
 {
 
-    public function index()
+    public function index(Order $order, Seminar $seminar)
     {
-        $orderIds = Order::where('user_id', Auth::id())
-                            ->where('status', 'succeeded')
-                            ->pluck('seminar_id')->toArray();
-
-        $seminar = Seminar::whereIn('id', $orderIds)->get();
-
-        return view('dashboard.certificates', ['seminars' => $seminar]);
+        $orderIds = $order->getUserOrderIds(Auth::id()); /// рефакторинг, выбрать все одним запросом
+        return view('dashboard.certificates', ['seminars' => $seminar->getSeminarsByIds($orderIds)]);
     }
 
 

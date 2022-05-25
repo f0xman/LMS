@@ -72,8 +72,7 @@ class QuizController extends Controller
      * @return Response
      */
     public function postAnswers(Request $request, QuizHandler $handler)
-    {
-                
+    {                
         $response = $handler->checkAnswers($request->all());
 
         return redirect()

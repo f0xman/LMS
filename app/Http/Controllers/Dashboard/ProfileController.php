@@ -53,12 +53,10 @@ class ProfileController extends Controller
      */
     public function savePassword(Request  $request)
     {
-
         $validatedData = $request->validate([
             'password' => 'required',
             'new_password' => 'required|min:8'
         ]);
-
 
         if(Hash::check($request->get('password'), Auth::User()->password)) {
 
