@@ -4,26 +4,22 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
-use App\Models\Order;
 use App\Models\Review;
 use App\Models\Seminar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Services\SeminarService;
+
 
 class SeminarController extends Controller
 {
 
-    public function seminar($id, Order $order)
+    public function seminar($id, SeminarService $service)
     {
 
-        $_order = $order->isSeminarAvailable($id, Auth::id());
-
-        if (!$_order) {
-            return view('dashboard.error', ['error' => 'Этот семинар вам недоступен.']);
+        if(!$this->isContentAvailable($id)) {
+            return view('dashboard.error', ['error' => 'Этот семинар вам недоступен.']); 
         }
-
-        /// Текущий уровень ученика в контексте заказанного семинара
-        $currentLevel = $_order->level;
 
         $seminar = Seminar::select('title', 'id', 'about', 'course_id')
             ->where('id', $id)
@@ -34,36 +30,16 @@ class SeminarController extends Controller
             ->where('id', $seminar->course_id)
             ->first();
 
-        $availableVideos = $unAvailableVideos = $availableFiles = $unAvailableFiles = array();
-
-        if (!empty($seminar->videos)) {
-            foreach ($seminar->videos as $video) {
-                if ($currentLevel >= $video->level) {
-                    $availableVideos[] = $video;
-                } else {
-                    $unAvailableVideos[] = $video;
-                }
-            }
-        }
-
-        if (!empty($seminar->files)) {
-            foreach ($seminar->files as $file) {
-                if ($currentLevel >= $file->level) {
-                    $availableFiles[] = $file;
-                } else {
-                    $unAvailableFiles[] = $file;
-                }
-            }
-        }
+        $content = $service->handler($seminar, $this->currentUserLevel);
 
         $isReviewExist = Review::where([['course_id', $id], ['user_id', Auth::id()]])->exists();
 
         return view('dashboard.seminar', ['seminar' => $seminar,
             'course' => $course,
-            'unAvailableVideos' => $unAvailableVideos,
-            'availableVideos' => $availableVideos,
-            'availableFiles' => $availableFiles,
-            'unAvailableFiles' => $unAvailableFiles,
+            'unAvailableVideos' => $content['unAvailableVideos'],
+            'availableVideos' => $content['availableVideos'],
+            'availableFiles' => $content['availableFiles'],
+            'unAvailableFiles' => $content['unAvailableFiles'],
             'isReviewExist' => $isReviewExist,
         ]);
     }

@@ -9,6 +9,8 @@ use Mclass\Yakassa\Yakassa;
 use App\Mail\ErrorMail;
 use App\Mail\SuccessOrderMail;
 use Illuminate\Support\Facades\Mail;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Http\Response;
 
 final class OrderService
 {
@@ -21,6 +23,7 @@ final class OrderService
     }    
 
     /**
+     * Собираем данные семинара и заказа
      * Формируем урл для отправки данных на Yookassa API
      *
      * @param  Int $seminarId - id семинара
@@ -28,11 +31,13 @@ final class OrderService
      * @param  Int $orderId - id заказа: null или ранее не оплаченный id
      * @return String URI
      */
-    public function composeYakassaURI(Int $seminarId, Int $userId, Int $orderId) {
+    public function composeYakassaURI(Int $seminarId, Int $userId, Int $orderId) : String
+    {
 
         $order_data = $this->composeSeminarData($seminarId, $userId);
 
         $seminarTitle = $order_data['seminar_title'];
+
         unset($order_data['seminar_title']);
         
         $order_id = $this->getOrCreateOrderId($orderId, $order_data);
@@ -51,33 +56,43 @@ final class OrderService
 
     /**
      *  Отправка данных на Yakassa
-     *  Обновление yookassa_id для заказа
      *  Получение платежного урл для перехода на юкассу
      *
      * @param  Int  $order_id
-     * @param  array  $data
-     * @return string $url
+     * @param  Array  $data
+     * @return String $url
      */
-    private function getYakassaURI(Int $order_id, Array $data)
+    private function getYakassaURI(Int $order_id, Array $data) : String
     {
         $yookassaResponse = $this->kassa->getYakassaConfirmationUrl($data);
 
-        Order::where('id', $order_id)
-            ->update(['yookassa_id' => $yookassaResponse['id']]);
+        $this->updataYookassaId($order_id, $yookassaResponse['id']);
 
         return $yookassaResponse['confirmation']['confirmation_url'];
+    }
+
+    /**
+     *  Обновим в заказе  yookassa_id
+     *
+     * @param  Int  $order_id
+     * @param  String  $yookassa_id
+     * @return Void
+     */    
+    private function updataYookassaId(Int $order_id, String $yookassa_id) : Void
+    {
+        Order::where('id', $order_id)->update(['yookassa_id' => $yookassa_id]);
     }
 
     /**
      *  Собираем массив данных, из семинара, для создания заказа 
      *  и отправки на Yookassa API
      *
-     * @param int $seminarId
-     * @param int $userId
-     * @return array $orderData
+     * @param Int $seminarId
+     * @param Int $userId
+     * @return Array $orderData
      */
-    private function composeSeminarData(Int $seminarId, Int $userId) {
-
+    private function composeSeminarData(Int $seminarId, Int $userId) : Array
+    {
         $seminar = Seminar::select('price', 'title', 'date')->where('id', $seminarId)->first();
 
         $time = strtotime($seminar->date);
@@ -97,11 +112,11 @@ final class OrderService
      *  Проверка id заказа (ранее не оплаченный)
      *  Если нет, заводим новый заказ и возвращаем его id
      *
-     * @param int $orderId
-     * @param array $seminarData
-     * @return int $orderId
+     * @param Int $orderId
+     * @param Array $seminarData
+     * @return Int $orderId
      */
-    private function getOrCreateOrderId(Int $orderId, Array $seminarData)
+    private function getOrCreateOrderId(Int $orderId, Array $seminarData) : Int
     {
         if ($orderId == 0) {
             $new_order = new Order($seminarData);
@@ -113,81 +128,74 @@ final class OrderService
 
 
     /**
-     * Обновление статуса заказа, полученного с Yookassa API
-     *
-     * @param  string $orderId
-     * @return String status
-     */
-    // public function updateOrderStatus(String $orderId) : String 
-    // {
-
-    //     //// Получим текущий yookassa_id заказа
-    //     $order = Order::select('yookassa_id', 'status')->where('id', $orderId)->first();
-
-    //     if ($order->status != 'succeeded') {
-
-    //         $yookassaResponseStatus = $kassa->getYakassaStatus($order->yookassa_id);
-
-    //         if ($yookassaResponseStatus) {
-    //             Order::where('id', $order_id)->update(['status' => $yookassaResponseStatus]);
-    //         }
-
-    //         return $yookassaResponseStatus;
-    //     }
-
-    //     return "succeeded";
-    // }
-
-    /**
      *  Получение и обоаботка результата оплаты с Yakassa
      *  Изменение статуса платежа
      *
      * @param  Request $request
      * @return response
      */
-    public function handleYakassaRequest(Request $request) : void
+    public function handleYakassaRequest(Array $request) : Response
     {
 
-        $status = $request->input('object.status');
-        $yookassa_id = $request->input('object.id');
-        $order_id = $request->input('object.metadata.order_id');
-        $seminar_id = $request->input('object.metadata.seminar_id');
-        $user_id = $request->input('object.metadata.user_id');
+        $status = $request['object']['status'];
+        $yookassa_id = $request['object']['id'];
+        $order_id = $request['object']['metadata']['order_id'];
 
         $order = Order::where('yookassa_id', $yookassa_id)
                         ->where('id', $order_id)
                         ->with(['seminar', 'user'])
                         ->first();
 
+        if (!$order) {
+            throw new HttpException(400, "Invalid data");
+        }
+
         if($order->status == 'succeeded')  {
-            die();
+            return response("", 200);
         }  
 
         if ($status == 'succeeded') {
-            Order::where('id', $order_id)
-                ->where('yookassa_id', $yookassa_id)
-                ->update(['status' => $status, 'level' => 2]);
-
-            $this->finalizeOrder($order_id);
+            $this->updateOrderStatus($order_id, $yookassa_id);
+            $this->finalizeOrder($order);
+            return response("", 200);
         }
 
+        return response(null, 204);
     }
 
     /**
-     * Send a success mail after ordering.
+     * Обновление статуса заказа, полученного с Yookassa API
      *
-     * @param  int course_id, int user_id
-     * @return void
+     * @param  string $orderId
+     * @return Void
      */
-    public function finalizeOrder(Order $order) : void
+    public function updateOrderStatus(Int $order_id, String $yookassa_id) : Void 
+    {
+        try {
+            Order::where('id', $order_id)
+                    ->where('yookassa_id', $yookassa_id)
+                    ->update(['status' => 'succeeded', 'level' => 2]);
+        }
+        catch(\Exception $exception) {
+            throw new HttpException(400, "Invalid data updateOrderStatus - {$exception}");
+        }
+    }
+
+    /**
+     * Финализация заказа, отправка письма пользователю о успешной покупке
+     *
+     * @param  Int course_id, int user_id
+     * @return Void
+     */
+    public function finalizeOrder(Order $order) : Void
     {
         $email_data = array(
-            'name' => $order->users->name,
+            'name' => $order->user->name,
             'seminar_id' => $order->seminar->id,
             'seminar_title' => $order->seminar->title,
         );
         
-        Mail::to($data->users->email)->send(new SuccessOrderMail($email_data));
+        Mail::to($order->user->email)->send(new SuccessOrderMail($email_data));
     }
 
 }

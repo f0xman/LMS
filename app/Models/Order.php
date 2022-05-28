@@ -24,26 +24,25 @@ class Order extends Model
     public function isAlreadyPurchased($seminarId, $userId)
     {
         $result = self::select('id', 'status')
-            ->where('removed', 0)
-            ->where('user_id', $userId)
-            ->where('seminar_id', $seminarId)
-            ->first();
+                        ->where('removed', 0)
+                        ->where('user_id', $userId)
+                        ->where('seminar_id', $seminarId)
+                        ->first();
         if ($result) { 
             return ( $result->status == 'succeeded' ) ? true : $result->id;
         }
         return null;
     }
 
-    //// Доступен ли семинар ученику
-    public function isSeminarAvailable($seminarId, $userId)
+    //// Оплачен ли семинар? Доступен ли семинар ученику
+    public function isOrderPayed($seminarId, $userId)
     {
-        $query = self::select('id', 'level')
-            ->where('status', 'succeeded')
-            ->whereDate('open_to', '>', date("Y-m-d"))
-            ->where('user_id', $userId)
-            ->where('seminar_id', $seminarId);
-
-        return $query->first();
+        return self::select('id', 'level')
+                    ->where('status', 'succeeded')
+                    ->whereDate('open_to', '>', date("Y-m-d"))
+                    ->where('user_id', $userId)
+                    ->where('seminar_id', $seminarId)
+                    ->first();
     }
 
     protected function serializeDate(DateTimeInterface $date)
@@ -53,28 +52,36 @@ class Order extends Model
 
     public function getUserOrderIds(Int $userId): Array {
         return self::where('user_id', $userId)
-                ->where('status', 'succeeded')
-                ->pluck('seminar_id')->toArray();
+                    ->where('status', 'succeeded')
+                    ->pluck('seminar_id')->toArray();
     } 
 
     public function getNotAvailableSeminars(Int $userId) {
         return self::where('user_id', $userId)
-                        ->where('removed', '0')
-                        ->where(function ($query) {
-                            $query->where('status', '!=', 'succeeded')
-                                ->orWhere('status', null);
-                        })
-                        ->orderBy('id', 'Desc')
-                        ->with(['seminar'])
-                        ->get();
+                    ->where('removed', '0')
+                    ->where(function ($query) {
+                        $query->where('status', '!=', 'succeeded')
+                            ->orWhere('status', null);
+                    })
+                    ->orderBy('id', 'Desc')
+                    ->with(['seminar'])
+                    ->get();
     } 
 
     public function getAvailableSeminars(Int $userId) {
         return self::where('user_id', $userId)
-                        ->where('status', 'succeeded')
-                        ->orderBy('id', 'Desc')
-                        ->with(['seminar'])
-                        ->get();
+                    ->where('status', 'succeeded')
+                    ->orderBy('id', 'Desc')
+                    ->with(['seminar'])
+                    ->get();
     } 
+
+    public function getOrderIdBySeminarId(Int $seminarId, Int $userId) : Int
+    {
+        return self::select('id')
+                    ->where('user_id', $userId)
+                    ->where('seminar_id', $seminarId)
+                    ->value('id');
+    }
 
 }

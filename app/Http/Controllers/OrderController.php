@@ -24,9 +24,9 @@ class OrderController extends Controller
      *
      * @param  Request  $request
      * @param  Order  $order
-     * @return Response
+     * @return Response|View
      */
-    public function create(Request $request, Order $order) : RedirectResponse
+    public function create(Request $request, Order $order) 
     {
         $seminar_id = $request->session()->get('seminar_id'); 
         $user_id = Auth::id();
@@ -51,7 +51,8 @@ class OrderController extends Controller
             $request->session()->forget(['toPaymentGate', 'seminar_id']);
             return redirect($url);
         } else {
-            return abort(500); //// Это временно, тут надо обработчик ошибок ЯК
+            //return abort(500); //// Это временно, тут надо обработчик ошибок ЯК
+            return view('errors.yakassa');
         }
     }
 
