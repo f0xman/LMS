@@ -34,8 +34,8 @@ class Controller extends BaseController
 
     /**
      * Проверка, доступен ли семинар пользователю
+     * Обновление уровня доступа
      *
-     * @param  Int $seminar_id
      * @return Bool
      */
     public function isContentAvailable(Int $seminar_id) : Bool
@@ -51,6 +51,7 @@ class Controller extends BaseController
         return false;
     }
 
+    // Обновление уровня доступа пользователя в контексте семинара/заказа
     private function setCurrentUserLevel(Int $levelNum) : Void
     {
         $this->currentUserLevel = $levelNum;

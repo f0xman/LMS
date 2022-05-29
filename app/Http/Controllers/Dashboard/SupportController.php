@@ -15,6 +15,8 @@ use App\Models\SupportMessage;
 class SupportController extends Controller
 {
 
+    ///////// Этот функционал ПОКА НЕ РАБОТЕТ
+    ///////// НУЖЕН РЕФАКТОРИНГ
     protected $support;
 
     public function __construct(Support $support)

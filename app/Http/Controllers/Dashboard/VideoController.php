@@ -16,8 +16,8 @@ class VideoController extends Controller
     {
 
         $video = Video::where('id', $id)
-            ->with('comments.user')
-            ->first();
+                    //->with('comments.user')
+                    ->first();
 
         if(!$this->isContentAvailable($video->seminar_id)) {
             return view('dashboard.error', ['error' => 'Этот семинар вам недоступен.']); 
@@ -31,17 +31,12 @@ class VideoController extends Controller
                     ->with('quiz_passed')
                     ->get();
 
-        $seminar = Seminar::select('title', 'slug')
-                    ->where('id', $video->seminar_id)
-                    ->first();
-
-        return view('dashboard.video', ['video' => $video, 'quizzes' => $quizzes, 'seminar' => $seminar]);
+        return view('dashboard.video', ['video' => $video, 'quizzes' => $quizzes]);
     }
 
      /**
-     * Store a new video comment.
+     * Этот функционл пока не работает
      *
-     * @param  Request  $request
      * @return Response
      */
     public function postComment(Request $request)

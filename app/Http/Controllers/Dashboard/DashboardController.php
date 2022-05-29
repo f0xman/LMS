@@ -18,9 +18,8 @@ class DashboardController extends Controller
     }
 
     /**
-     * Delete a seminar
+     * Мягкое удаление семинара
      *
-     * @param  Request $request
      * @return Response
      */
     public function deleteSeminar(Request $request)
@@ -33,31 +32,5 @@ class DashboardController extends Controller
         redirect()->route('dashboard')->with('success', 'Семинар удален') :
         redirect()->route('dashboard')->with('error', 'Не удалось удалить семинар') ;
     }
-
-    /**
-     * Success page after ordering. ЭТО ВРЕМЕННЫЙ КОСТЫЛЬ для проверки ответа !!!!
-     *
-     * @param  string $order_id, OrderHandler $order
-     * @return view result
-     */
-    // public function success(string $order_id, OrderService $order)
-    // {
-        
-    //     $yookassaResponseStatus = $order->updateOrderStatus($order_id);
-
-    //     if ($yookassaResponseStatus == 'succeeded') {
-            
-    //         $result = 'success';
-
-    //         if ($order->status != 'succeeded') {
-    //             $order->finalizeOrder($order_id);
-    //         }
-
-    //     } else {
-    //         $result = 'error'; //// TODO error меня напрягает, надо что-то придумать
-    //     }
-
-    //     return view('dashboard.success', ['result' => $result]);
-    // }
 
 }

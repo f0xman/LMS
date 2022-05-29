@@ -17,7 +17,7 @@ class CourseController extends Controller
         $actualCourses = Course::where('active', '1')
                             ->where('end', '>', date('Y-m-d'))
                             ->orderBy('end', 'Asc')
-                            ->with(['seminars'])
+                            //->with(['seminars'])
                             ->paginate(3);
 
         $category_meta = (request()->category) ? $category[request()->category] : '' ;

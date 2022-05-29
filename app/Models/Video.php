@@ -20,4 +20,9 @@ class Video extends Model
         return $this->hasMany(Quiz::class, 'video_id');
     }
 
+    public function seminar()
+    {
+        return $this->belongsTo(Seminar::class, 'seminar_id');
+    }
+
 }

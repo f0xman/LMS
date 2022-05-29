@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
 use App\Models\Course;
 use App\Models\Seminar;
-use App\Services\CertificateHandler;
+use App\Services\CertificateService;
 
 
 class CertificateController extends Controller
@@ -17,18 +17,16 @@ class CertificateController extends Controller
 
     public function index(Order $order, Seminar $seminar)
     {
-        $orderIds = $order->getUserOrderIds(Auth::id()); /// рефакторинг, выбрать все одним запросом
+        $orderIds = $order->getUserOrderIds(Auth::id()); 
         return view('dashboard.certificates', ['seminars' => $seminar->getSeminarsByIds($orderIds)]);
     }
 
-
      /**
-     * Create Certificate
+     * Генерация сертификата
      *
-     * @param  Request  $request
      * @return Response
      */
-     public function generateCertificate(Request $request, CertificateHandler $handler)
+     public function generateCertificate(Request $request, CertificateService $service)
     {
         $validatedData = $request->validate([
             'name' => 'required',
@@ -38,7 +36,7 @@ class CertificateController extends Controller
                     ->with(['teacher'])
                     ->first();                   
 
-        return $handler->generateSertificate($seminar, $request->get('name'));
+        return $service->generateSertificate($seminar, $request->get('name'));
     }
 
 }

@@ -42,10 +42,9 @@ class QuizController extends Controller
     }
 
     /**
-     * Постинг ответов на проверку
+     * Проверка ответов
      *
-     * @param  Request $request
-     * @return Response
+     * @return Redirect
      */
     public function postAnswers(Request $request)
     {                

@@ -10,7 +10,7 @@
 				    <h2><i class="fa fa-play-circle"></i> {{ $seminar->title ?? 'Семинар' }}</h2>
 			    </div>
 
-          <p><a href="{{ route('courseShow', ['slug'=>$course->slug]) }}" target="_blank">Курс "{{ $course->title }}"</a></p>
+          <p><a href="{{ route('courseShow', ['slug'=>$seminar->course->slug]) }}" target="_blank">Курс "{{ $seminar->course->title }}"</a></p>
 
           <div class="row">
 

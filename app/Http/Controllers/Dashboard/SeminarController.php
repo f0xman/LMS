@@ -26,16 +26,12 @@ class SeminarController extends Controller
             ->with(['videos', 'files', 'course'])
             ->first();
 
-        $course = Course::select('title', 'slug')
-            ->where('id', $seminar->course_id)
-            ->first();
-
         $content = $service->handler($seminar, $this->currentUserLevel);
 
         $isReviewExist = Review::where([['course_id', $id], ['user_id', Auth::id()]])->exists();
 
         return view('dashboard.seminar', ['seminar' => $seminar,
-            'course' => $course,
+    
             'unAvailableVideos' => $content['unAvailableVideos'],
             'availableVideos' => $content['availableVideos'],
             'availableFiles' => $content['availableFiles'],
@@ -47,7 +43,6 @@ class SeminarController extends Controller
     /**
      * Сохранение отзыва о семинаре
      *
-     * @param  Request  $request
      * @return Response
      */
     public function postReview(Request $request)

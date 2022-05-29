@@ -13,6 +13,8 @@ use Hash;
 class ProfileController extends Controller
 {
 
+    /// TODO  Рефакторинг. Добавление policies
+
     public function index()
     {
 

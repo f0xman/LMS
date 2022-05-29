@@ -5,7 +5,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\Auth;
 use Imagick;
 
-class CertificateHandler
+class CertificateService
 {
 
     /** @var string */

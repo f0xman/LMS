@@ -6,7 +6,7 @@
 
         <div class="header_box version_2">
             <h2><i class="fa fa-play-circle"></i>
-            <a href="{{ route('showSeminar', ['id'=>$video->seminar_id]) }}">{{{ $seminar->title ?? '' }}}</a>
+            <a href="{{ route('showSeminar', ['id'=>$video->seminar_id]) }}">{{{ $video->seminar->title ?? '' }}}</a>
             <i class="fa fa-long-arrow-right"></i>{{ $video->title ?? 'Ошибка' }}</h2>
         </div>
 
