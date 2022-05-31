@@ -26,14 +26,11 @@ final class OrderService
      * Собираем данные семинара и заказа
      * Формируем урл для отправки данных на Yookassa API
      *
-     * @param  Int $seminarId - id семинара
-     * @param  Int $userId - id пользователя
      * @param  Int $orderId - id заказа: null или ранее не оплаченный id
      * @return String URI
      */
     public function composeYakassaURI(Int $seminarId, Int $userId, Int $orderId) : String
     {
-
         $order_data = $this->composeSeminarData($seminarId, $userId);
 
         $seminarTitle = $order_data['seminar_title'];
@@ -58,8 +55,6 @@ final class OrderService
      *  Отправка данных на Yakassa
      *  Получение платежного урл для перехода на юкассу
      *
-     * @param  Int  $order_id
-     * @param  Array  $data
      * @return String $url
      */
     private function getYakassaURI(Int $order_id, Array $data) : String
@@ -74,8 +69,6 @@ final class OrderService
     /**
      *  Обновим в заказе  yookassa_id
      *
-     * @param  Int  $order_id
-     * @param  String  $yookassa_id
      * @return Void
      */    
     private function updataYookassaId(Int $order_id, String $yookassa_id) : Void
@@ -87,8 +80,6 @@ final class OrderService
      *  Собираем массив данных, из семинара, для создания заказа 
      *  и отправки на Yookassa API
      *
-     * @param Int $seminarId
-     * @param Int $userId
      * @return Array $orderData
      */
     private function composeSeminarData(Int $seminarId, Int $userId) : Array
@@ -112,8 +103,6 @@ final class OrderService
      *  Проверка id заказа (ранее не оплаченный)
      *  Если нет, заводим новый заказ и возвращаем его id
      *
-     * @param Int $orderId
-     * @param Array $seminarData
      * @return Int $orderId
      */
     private function getOrCreateOrderId(Int $orderId, Array $seminarData) : Int
@@ -131,12 +120,10 @@ final class OrderService
      *  Получение и обоаботка результата оплаты с Yakassa
      *  Изменение статуса платежа
      *
-     * @param  Request $request
      * @return response
      */
     public function handleYakassaRequest(Array $request) : Response
     {
-
         $status = $request['object']['status'];
         $yookassa_id = $request['object']['id'];
         $order_id = $request['object']['metadata']['order_id'];
@@ -166,7 +153,6 @@ final class OrderService
     /**
      * Обновление статуса заказа, полученного с Yookassa API
      *
-     * @param  string $orderId
      * @return Void
      */
     public function updateOrderStatus(Int $order_id, String $yookassa_id) : Void 
@@ -184,7 +170,6 @@ final class OrderService
     /**
      * Финализация заказа, отправка письма пользователю о успешной покупке
      *
-     * @param  Int course_id, int user_id
      * @return Void
      */
     public function finalizeOrder(Order $order) : Void

@@ -24,8 +24,6 @@ class QuizService
      * Сборка массива ответов квиза. 
      * order_id - нужен для обновления level при проверке ответов
      *
-     * @param  Iterable  $questions
-     * @param  Int $seminar_id
      * @return Array
      */
     public function composeQuestions(Iterable $questions, Int $seminar_id): Array
@@ -81,10 +79,9 @@ class QuizService
     /**
      * Сборка массива правильных ответов квиза для сравнения с результатом.
      *
-     * @param  Int  $quiz_id
      * @return Array
      */
-    private function composeRightAnswers($quiz_id): Array
+    private function composeRightAnswers(Int $quiz_id): Array
     {
         return Question::where('quiz_id', $quiz_id)->pluck('v1')->toArray();
     }
@@ -97,10 +94,9 @@ class QuizService
      * 3. Формируем массив id всех пройденных квизов, на основе массива выше (2.)
      * 4. Сравним массивы. Если идентичны, значит пользователь прошел все квизы своего уровня, в рамках семинара | true
      *
-     * @param  Int  $order_id
      * @return Bool
      */
-    private function doUpdateLevel($order_id): Bool
+    private function doUpdateLevel(Int $order_id): Bool
     {
         $order = $this->order::where('id', $order_id)
             ->where('user_id', Auth::id())
@@ -120,11 +116,7 @@ class QuizService
         sort($availableQuizzessIds);
         sort($passedQuizzesIds);
 
-        //print_r($availableQuizzessIds);
-        //print_r($passedQuizzesIds);
-
         return ($availableQuizzessIds == $passedQuizzesIds) ?? false;
-
     }
 
     /**
@@ -134,8 +126,7 @@ class QuizService
      * @return Array
      */
     private function composeAvailableQuizzesIds(Int $seminarId, Int $currentLevel): Array
-    {        
-        
+    {                
         $videos = Video::where('seminar_id', $seminarId)
                         ->where('level', $currentLevel)
                         ->with('quizzes')
@@ -174,7 +165,6 @@ class QuizService
     /**
      * Добавляем/обновляем запись в таблице, если квиз пройден
      *
-     * @param  Int  $quiz_id
      * @return Void
      */
     private function updateQuiz(Int $quiz_id): Void
@@ -188,7 +178,6 @@ class QuizService
     /**
      * Обновление уровня пользователя в заказе
      *
-     * @param  Int  $order_id
      * @return Void
      */
     private function updateLevel(Int $order_id): Void
