@@ -12,7 +12,6 @@ use App\Models\Quiz;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
-use Encore\Admin\Show;
 
 class QuizController extends AdminController
 {
@@ -83,6 +82,16 @@ class QuizController extends AdminController
         ////// ВОПРОСЫ
         })->tab('Вопросы', function ($form) {
 
+            // $form->text('title')->attribute(['data-title' => 'title...']);
+
+            // $form->text('titlse')->datalist(['key' => 'value', 'key2' => 'value2']);
+
+            // for ($i=0; $i<4; $i++) {
+
+            //     $form->text('----------title'.$i, __('Название'));
+
+            // }
+
             $form->hasMany('questions', 'Добавить вопрос', function (Form\NestedForm $form) {
                 $form->textarea('question', __('Вопрос'))->rules('required');
                 $form->text('v1', __('Вариант 1 (правильный)'))->rules('required');
@@ -92,6 +101,14 @@ class QuizController extends AdminController
             });
         
         });
+
+        $form->saving(function (Form $form) {
+
+            dump($form);
+            exit;
+        
+        });
+       
 
         return $form;
     }
